@@ -1,5 +1,5 @@
 import unittest
-from acronyms.Acronym import Acronym
+from acronyms.acronym import Acronym
 
 class TestAcronym(unittest.TestCase):
 
