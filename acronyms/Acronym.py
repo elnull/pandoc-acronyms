@@ -1,7 +1,6 @@
-# A class that represents one acronym.
-
 class Acronym:
-    def __init__(self, _key = "", _shortform = "", _longform = ""):
+    """A class that represents one acronym."""
+    def __init__(self, _key = '', _shortform = '', _longform = ''):
         self.key = _key
         self.shortform = _shortform
         self.longform = _longform
@@ -13,3 +12,19 @@ class Acronym:
     @key.setter
     def key(self, key):
         self._key = str(key)
+
+    @property
+    def shortform(self):
+        return self._shortform
+
+    @shortform.setter
+    def shortform(self, shortform):
+        self._shortform = str(shortform)
+
+    @property
+    def longform(self):
+        return self._longform
+
+    @longform.setter
+    def longform(self, longform):
+        self._longform = str(longform)
