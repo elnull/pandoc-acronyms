@@ -21,8 +21,20 @@ class TestAcronyms(unittest.TestCase):
         with open(self._return_local_test_data("two_basic_acronyms.json"), "r") as handle:
             a = Acronyms.Read(handle)
             self.assertEqual(len(a.values), 2)
+            aba = a.get('aba')
+            self.assertEqual(aba.shortform, 'ABA')
+            self.assertEqual(aba.longform, 'A Better Acronym')
+            aba = a.get('bba')
+            self.assertEqual(aba.shortform, 'BBA')
+            self.assertEqual(aba.longform, 'Beer Brewing Attitude')
 
-     def _return_local_test_data(self, filename):
+    def test_read_incomplete_entries(self):
+        with open(self._return_local_test_data("incomplete_acronyms.json"), "r") as handle:
+            a = Acronyms.Read(handle)
+            self.assertEqual(len(a.values), 3)
+            print(a)
+
+    def _return_local_test_data(self, filename):
         current_path = pathlib.Path(__file__).parent.absolute()
         path = os.path.join(current_path, "data", filename)
         return path

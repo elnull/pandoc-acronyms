@@ -27,8 +27,8 @@ class Acronyms:
         for key, value in data.items():
             acronym = Acronym()
             acronym.key = key
-            acronym.shortform = value['shortform']
-            acronym.longform = value['longform']
+            acronym.shortform = value.get('shortform')
+            acronym.longform = value.get('longform')
             acronyms.set(acronym)
         return acronyms
 
