@@ -1,4 +1,6 @@
 import unittest
+import os
+import pathlib
 from acronyms.acronyms import Acronyms
 from acronyms.acronym import Acronym
 
@@ -14,6 +16,16 @@ class TestAcronyms(unittest.TestCase):
         self.assertEqual(acronyms.get(a.key), a)
         self.assertEqual(acronyms.get(b.key), b)
         self.assertEqual(acronyms.get('nonsense'), None)
+
+    def test_read(self):
+        with open(self._return_local_test_data("two_basic_acronyms.json"), "r") as handle:
+            a = Acronyms.Read(handle)
+            self.assertEqual(len(a.values), 2)
+
+     def _return_local_test_data(self, filename):
+        current_path = pathlib.Path(__file__).parent.absolute()
+        path = os.path.join(current_path, "data", filename)
+        return path
 
 if __name__ == '__main__':
     unittest.main()
