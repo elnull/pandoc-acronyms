@@ -28,3 +28,8 @@ class Acronym:
     @longform.setter
     def longform(self, longform):
         self._longform = str(longform)
+
+    def __eq__(self, other):
+        if not isinstance(other, Acronym):
+            return NotImplemented
+        return self.key == other.key and self.shortform == other.shortform and self.longform == other.longform

@@ -1,6 +1,7 @@
 import unittest
 import os
 import pathlib
+import tempfile
 from acronyms.acronyms import Acronyms
 from acronyms.acronym import Acronym
 
@@ -32,7 +33,23 @@ class TestAcronyms(unittest.TestCase):
         with open(self._return_local_test_data("incomplete_acronyms.json"), "r") as handle:
             a = Acronyms.Read(handle)
             self.assertEqual(len(a.values), 3)
-            print(a)
+            shortonly = a.get('shortonly')
+            self.assertEqual(shortonly.shortform, 'so')
+            self.assertEqual(shortonly.longform, '')
+
+
+    def test_write_read(self):
+        a = Acronyms()
+        with open(self._return_local_test_data("two_basic_acronyms.json"), "r") as handle:
+            a = Acronyms.Read(handle)
+            self.assertEqual(len(a.values), 2)
+        tmp_file_path = ""
+        with tempfile.NamedTemporaryFile(prefix='python-test-', suffix='.json', delete=False) as file:
+            tmp_file_path = file.name
+            a.write(file)
+        with open(tmp_file_path, "r") as handle:
+            b = Acronyms.Read(handle)
+            self.assertEqual(a, b)
 
     def _return_local_test_data(self, filename):
         current_path = pathlib.Path(__file__).parent.absolute()

@@ -27,11 +27,16 @@ class Acronyms:
         for key, value in data.items():
             acronym = Acronym()
             acronym.key = key
-            acronym.shortform = value.get('shortform')
-            acronym.longform = value.get('longform')
+            acronym.shortform = value.get('shortform', '')
+            acronym.longform = value.get('longform', '')
             acronyms.set(acronym)
         return acronyms
 
     def write(self, fileobject):
         data = AcronymJSONEncoder().encode(self.values)
-        fileobject.write(data)
+        fileobject.write(data.encode('utf-8'))
+
+    def __eq__(self, other):
+        if not isinstance(other, Acronyms):
+            return NotImplemented
+        return self.values == other.values
