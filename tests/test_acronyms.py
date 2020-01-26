@@ -1,9 +1,9 @@
 import unittest
 import os
-import pathlib
 import tempfile
 from acronyms.acronyms import Acronyms
 from acronyms.acronym import Acronym
+from tests.test_tools import return_local_test_data
 
 class TestAcronyms(unittest.TestCase):
     def test_acronyms(self):
@@ -19,7 +19,7 @@ class TestAcronyms(unittest.TestCase):
         self.assertEqual(acronyms.get('nonsense'), None)
 
     def test_read(self):
-        with open(self._return_local_test_data("two_basic_acronyms.json"), "r") as handle:
+        with open(return_local_test_data("two_basic_acronyms.json"), "r") as handle:
             a = Acronyms.Read(handle)
             self.assertEqual(len(a.values), 2)
             aba = a.get('aba')
@@ -30,7 +30,7 @@ class TestAcronyms(unittest.TestCase):
             self.assertEqual(aba.longform, 'Beer Brewing Attitude')
 
     def test_read_incomplete_entries(self):
-        with open(self._return_local_test_data("incomplete_acronyms.json"), "r") as handle:
+        with open(return_local_test_data("incomplete_acronyms.json"), "r") as handle:
             a = Acronyms.Read(handle)
             self.assertEqual(len(a.values), 3)
             shortonly = a.get('shortonly')
@@ -40,7 +40,7 @@ class TestAcronyms(unittest.TestCase):
 
     def test_write_read(self):
         a = Acronyms()
-        with open(self._return_local_test_data("two_basic_acronyms.json"), "r") as handle:
+        with open(return_local_test_data("two_basic_acronyms.json"), "r") as handle:
             a = Acronyms.Read(handle)
             self.assertEqual(len(a.values), 2)
         tmp_file_path = ""
@@ -50,11 +50,6 @@ class TestAcronyms(unittest.TestCase):
         with open(tmp_file_path, "r") as handle:
             b = Acronyms.Read(handle)
             self.assertEqual(a, b)
-
-    def _return_local_test_data(self, filename):
-        current_path = pathlib.Path(__file__).parent.absolute()
-        path = os.path.join(current_path, "data", filename)
-        return path
 
 if __name__ == '__main__':
     unittest.main()
