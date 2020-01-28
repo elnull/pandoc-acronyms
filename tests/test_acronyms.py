@@ -5,6 +5,7 @@ from acronyms.acronyms import Acronyms
 from acronyms.acronym import Acronym
 from tests.test_tools import return_local_test_data
 
+
 class TestAcronyms(unittest.TestCase):
     def test_acronyms(self):
         acronyms = Acronyms()
@@ -24,10 +25,10 @@ class TestAcronyms(unittest.TestCase):
             self.assertEqual(len(a.values), 2)
             aba = a.get('aba')
             self.assertEqual(aba.shortform, 'ABA')
-            self.assertEqual(aba.longform, 'A Better Acronym')
+            self.assertEqual(aba.longform, 'a better acronym')
             aba = a.get('bba')
             self.assertEqual(aba.shortform, 'BBA')
-            self.assertEqual(aba.longform, 'Beer Brewing Attitude')
+            self.assertEqual(aba.longform, 'beer brewing attitude')
 
     def test_read_incomplete_entries(self):
         with open(return_local_test_data("incomplete_acronyms.json"), "r") as handle:
@@ -36,7 +37,6 @@ class TestAcronyms(unittest.TestCase):
             shortonly = a.get('shortonly')
             self.assertEqual(shortonly.shortform, 'so')
             self.assertEqual(shortonly.longform, '')
-
 
     def test_write_read(self):
         a = Acronyms()
@@ -50,6 +50,7 @@ class TestAcronyms(unittest.TestCase):
         with open(tmp_file_path, "r") as handle:
             b = Acronyms.Read(handle)
             self.assertEqual(a, b)
+
 
 if __name__ == '__main__':
     unittest.main()

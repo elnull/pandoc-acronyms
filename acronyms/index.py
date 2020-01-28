@@ -20,3 +20,6 @@ class Index:
         value = value+1
         self.uses[acronym.key] = value
         return value
+
+    def occurences(self, key):
+        return self.uses.get(key) or 0

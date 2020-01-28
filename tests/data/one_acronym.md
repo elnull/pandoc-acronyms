@@ -1,3 +1,3 @@
 # A sample document with one acronym
 
-This document contains one acronym: [!BBA].
+This document contains one acronym: [!bba].

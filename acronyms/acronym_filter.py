@@ -4,37 +4,89 @@ import panflute
 import sys
 import re
 
+from acronyms.acronyms import Acronyms
+from acronyms.index import Index
+
+
 class Filter:
     """The Filter class manages the configuration of a single filter run."""
+
     def __init__(self):
-        pass
+        self.acronyms = Acronyms()
+        self.index = Index()
+
+    @property
+    def acronyms(self):
+        return self._acronyms
+
+    @acronyms.setter
+    def acronyms(self, value):
+        self._acronyms = value
+
+    @property
+    def index(self):
+        return self._index
+
+    @index.setter
+    def index(self, value):
+        self._index = value
 
     def filter_acronyms(self, element, doc):
         """The panflute filter function."""
         if type(element) == panflute.Str:
-            if self.is_match(element.text):
-                self.maybe_replace_acronym(element)
-    
+            match = self.is_match(element.text)
+            if match:
+                self.maybe_replace(element, match)
+
     def is_match(self, elementtext):
         """is_match returns True if the element is recognized as an acronym."""
         expression = Filter.match_expression()
         match = expression.match(elementtext)
-        return match is not None
+        return match
 
-    def maybe_replace_acronym(self, element):
-        print("[{}] {}".format(type(element).__name__, element.text), file=sys.stderr)
+    def maybe_replace(self, element, match):
+        text = match.group(1)
+
+        acronyms = self.acronyms
         # is this an acronym?
-        # is this the first use of the acronym?
-        pass
+        acronym = acronyms.get(text)
+        if not acronym:
+            print("Warning: acronym {} undefined.".format(text), file=sys.stderr)
+            return
+        # register the use of the acronym:
+        count = self.index.register(acronym)
+        # # is this the first use of the acronym?
+        if count == 1:
+            print("Debug: first use of acronym {} found.".format(
+                text), file=sys.stderr)
+            element.text = "{} ({})".format(
+                acronym.longform, acronym.shortform)
+        else:
+            print("Debug: acronym {} found again.".format(
+                text), file=sys.stderr)
+            element.text = acronym.shortform
+
+    def run(self, doc):
+        """The entry method to execute the filter."""
+        # We need state in the filter function, so we create a filter function that references the filter object:
+
+        def filter_closure(element, doc):
+            return self.filter_acronyms(element, doc)
+
+        return doc.walk(filter_closure)
 
     @staticmethod
     def match_expression():
-        return re.compile(r'(\[\!.+\])')
+        return re.compile(r'\[\!(.+)\]')
 
-def run_acronyms_filter(doc):
+
+def run_acronyms_filter(acronyms, doc):
     """The entry method to execute the filter."""
     filter = Filter()
+    filter.acronyms = acronyms
     # We need state in the filter function, so we create a filter function that references the filter object:
+
     def filter_closure(element, doc):
         return filter.filter_acronyms(element, doc)
+
     return doc.walk(filter_closure)
