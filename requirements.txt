@@ -1,3 +1,4 @@
 Click>=7.0
 panflute>=1.12.4
 PyYAML>=5.3
+Coverage>=5.0.2
