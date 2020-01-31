@@ -2,6 +2,7 @@
 
 import click
 from acronyms.acronym_filter import Filter
+from acronyms.logging import configure_logging, error
 
 
 @click.command()
@@ -10,12 +11,12 @@ from acronyms.acronym_filter import Filter
 def filter(acronyms, verbose):
     """The pandoc-acronyms filter."""
     filter = Filter()
-    filter.verbose = verbose
+    configure_logging(verbose)
 
     try:
-        filter.temp_run(acronyms)
+        filter.run(acronyms)
     except Exception as e:
-        click.secho(str(e), fg='red', err=True)
+        error(str(e))
         if verbose:
             raise e
 
