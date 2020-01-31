@@ -1,6 +1,6 @@
 import unittest
 from tests.test_tools import return_local_test_data, convert_to_json
-from acronyms.acronym_filter import Filter, run_acronyms_filter
+from acronyms.acronym_filter import Filter
 from acronyms.acronyms import Acronyms
 import panflute
 import io

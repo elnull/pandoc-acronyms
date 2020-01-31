@@ -3,6 +3,7 @@
 import panflute
 import sys
 import re
+import click
 
 from acronyms.acronyms import Acronyms
 from acronyms.index import Index
@@ -31,6 +32,36 @@ class Filter:
     def index(self, value):
         self._index = value
 
+    @property
+    def verbose(self):
+        return self._verbose
+
+    @verbose.setter
+    def verbose(self, onOff):
+        self._verbose = onOff
+
+    def debug(self, msg):
+        if self.verbose:
+            click.secho(msg, fg='yellow', err=True)
+
+    # FIXME placeholder
+    # FIXME implement test (doc must be passed)
+    def temp_run(self, acronymfiles):
+        if acronymfiles:
+            for input in acronymfiles:
+                self.debug('Loading acronyms from {}...'.format(input))
+                with open(input, "r") as handle:
+                    dictionary = Acronyms.Read(handle)
+                    self.acronyms = dictionary
+                    # TODO merge multiple dictionaries
+        else:
+            self.debug('No acronym definitions specified!')
+
+        def filter_closure(element, doc):
+            return self.filter_acronyms(element, doc)
+
+        return panflute.run_filter(filter_closure)
+
     def filter_acronyms(self, element, doc):
         """The panflute filter function."""
         if type(element) == panflute.Str:
@@ -51,7 +82,8 @@ class Filter:
         # is this an acronym?
         acronym = acronyms.get(text)
         if not acronym:
-            print("Warning: acronym {} undefined.".format(text), file=sys.stderr)
+            print("Warning: acronym {} undefined.".format(
+                text), file=sys.stderr)
             return
         # register the use of the acronym:
         count = self.index.register(acronym)
@@ -78,15 +110,3 @@ class Filter:
     @staticmethod
     def match_expression():
         return re.compile(r'\[\!(.+)\]')
-
-
-def run_acronyms_filter(acronyms, doc):
-    """The entry method to execute the filter."""
-    filter = Filter()
-    filter.acronyms = acronyms
-    # We need state in the filter function, so we create a filter function that references the filter object:
-
-    def filter_closure(element, doc):
-        return filter.filter_acronyms(element, doc)
-
-    return doc.walk(filter_closure)

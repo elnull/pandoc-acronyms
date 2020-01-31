@@ -30,6 +30,16 @@ class TestAcronyms(unittest.TestCase):
             self.assertEqual(aba.shortform, 'BBA')
             self.assertEqual(aba.longform, 'beer brewing attitude')
 
+    def test_merge(self):
+        acronyms_left = None
+        acronyms_right = None
+        with open(return_local_test_data("two_basic_acronyms.json"), "r") as handle:
+            acronyms_left = Acronyms.Read(handle)
+        with open(return_local_test_data("incomplete_acronyms.json"), "r") as handle:
+            acronyms_right = Acronyms.Read(handle)
+        acronyms_left.merge(acronyms_right)
+        self.assertIsNotNone(acronyms_left.get('aba'))
+
     def test_read_incomplete_entries(self):
         with open(return_local_test_data("incomplete_acronyms.json"), "r") as handle:
             a = Acronyms.Read(handle)
