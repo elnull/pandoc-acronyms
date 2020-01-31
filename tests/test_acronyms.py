@@ -26,19 +26,26 @@ class TestAcronyms(unittest.TestCase):
             aba = a.get('aba')
             self.assertEqual(aba.shortform, 'ABA')
             self.assertEqual(aba.longform, 'a better acronym')
-            aba = a.get('bba')
-            self.assertEqual(aba.shortform, 'BBA')
-            self.assertEqual(aba.longform, 'beer brewing attitude')
+            bba = a.get('bba')
+            self.assertEqual(bba.shortform, 'BBA')
+            self.assertEqual(bba.longform, 'beer brewing attitude')
 
     def test_merge(self):
         acronyms_left = None
         acronyms_right = None
         with open(return_local_test_data("two_basic_acronyms.json"), "r") as handle:
             acronyms_left = Acronyms.Read(handle)
-        with open(return_local_test_data("incomplete_acronyms.json"), "r") as handle:
+        with open(return_local_test_data("one_redefined_acronym.json"), "r") as handle:
             acronyms_right = Acronyms.Read(handle)
+        aba = acronyms_left.get('aba')
+        self.assertEqual(aba.shortform, 'ABA')
+        self.assertEqual(aba.longform, 'a better acronym')
+        bba = acronyms_left.get('bba')
         acronyms_left.merge(acronyms_right)
-        self.assertIsNotNone(acronyms_left.get('aba'))
+        aba = acronyms_left.get('aba')
+        self.assertEqual(aba.shortform, 'ABA')
+        self.assertEqual(aba.longform, 'a beneficial argument')
+        self.assertEqual(acronyms_left.get(bba.key), bba)
 
     def test_read_incomplete_entries(self):
         with open(return_local_test_data("incomplete_acronyms.json"), "r") as handle:
