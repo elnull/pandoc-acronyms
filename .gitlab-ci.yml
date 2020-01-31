@@ -4,6 +4,12 @@ before_script:
     - apt-get update -qq && apt-get install -y python3 python3-pip make git pandoc
     - pip3 install -r requirements.txt
 
+build:
+    stage: build
+    script:
+	- python setup.py install
+	- pandoc-acronyms --help
+
 test:
     stage: test
     coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
