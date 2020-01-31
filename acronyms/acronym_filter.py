@@ -52,8 +52,7 @@ class Filter:
                 self.debug('Loading acronyms from {}...'.format(input))
                 with open(input, "r") as handle:
                     dictionary = Acronyms.Read(handle)
-                    self.acronyms = dictionary
-                    # TODO merge multiple dictionaries
+                    self.acronyms.merge(dictionary)
         else:
             self.debug('No acronym definitions specified!')
 
