@@ -24,6 +24,27 @@ class TestAcronymFilter(unittest.TestCase):
         self.assertFalse(filter.is_match("[[!BBA]]"))
         self.assertFalse(filter.is_match("[@BBA]"))
 
+    def test_replace_acronym(self):
+        filter = Filter()
+        filter.acronyms = self._createAcronymsDictionary(
+            "two_basic_acronyms.json")
+        acronym = filter.acronyms.get('bba')
+        test_sets = {
+            # key (descriptive) : (input, first use?, expected result)
+            "first use of acronym": ["[!bba]", True, "beer brewing attitude (BBA)"],
+            "repeated use of acronym": ["[!bba]", False, "BBA"]
+            # TODO Not Implemented:
+            # "repeated use, plural form": ["[!bba+]", False, "BBAs"],
+            # "use-with-word": ["[!bba]-related", False, "BBA-related"],
+
+        }
+        for key, test_set in test_sets.items():
+            matchtext = test_set[0]
+            firstuse = test_set[1]
+            expected_result = test_set[2]
+            result = filter.replace_acronym(matchtext, acronym, firstuse)
+            self.assertEqual(result, expected_result, key)
+
     def test_run_method(self):
         doc = self._loadJSONDocument("one_acronym.md")
         acronyms = return_local_test_data("two_basic_acronyms.json")

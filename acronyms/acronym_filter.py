@@ -7,7 +7,7 @@ import click
 
 from acronyms.acronyms import Acronyms
 from acronyms.index import Index
-from acronyms.logging import debug
+from acronyms.logging import debug, info
 
 
 class Filter:
@@ -36,12 +36,12 @@ class Filter:
     def run(self, acronymfiles, doc=None):
         if acronymfiles:
             for input in acronymfiles:
-                debug('Loading acronyms from {}...'.format(input))
+                info('Loading acronyms from {}...'.format(input))
                 with open(input, "r") as handle:
                     dictionary = Acronyms.Read(handle)
                     self.acronyms.merge(dictionary)
         else:
-            debug('No acronym definitions specified!')
+            info('No acronym definitions specified!')
         return self.process_document(doc)
 
     def filter_acronyms(self, element, doc):
@@ -57,25 +57,31 @@ class Filter:
         match = expression.match(elementtext)
         return match
 
+    def replace_acronym(self, matchtext, acronym, firstuse):
+        text = acronym.shortform
+        if firstuse:
+            text = "{} ({})".format(acronym.longform, acronym.shortform)
+        return text
+
     def maybe_replace(self, element, match):
+        # TODO There may be more than one match, e.g. "FOSS-based-GDP"
         text = match.group(1)
 
         acronyms = self.acronyms
         # is this an acronym?
         acronym = acronyms.get(text)
         if not acronym:
-            debug("Warning: acronym {} undefined.".format(text))
+            info("Warning: acronym {} undefined.".format(text))
             return
         # register the use of the acronym:
         count = self.index.register(acronym)
         # # is this the first use of the acronym?
         if count == 1:
-            debug("Debug: first use of acronym {} found.".format(text))
-            element.text = "{} ({})".format(
-                acronym.longform, acronym.shortform)
+            info("First use of acronym {} found.".format(text))
+            element.text = self.replace_acronym(element.text, acronym, True)
         else:
-            debug("Debug: acronym {} found again.".format(text))
-            element.text = acronym.shortform
+            debug("Acronym {} found again.".format(text))
+            element.text = self.replace_acronym(element.text, acronym, False)
 
     def process_document(self, doc):
         """The entry method to execute the filter."""

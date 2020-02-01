@@ -2,14 +2,22 @@
 import click
 
 _Verbose = False
+_Debug = False
 
 
-def configure_logging(verbose):
+def configure_logging(verbose, debug):
     global _Verbose
     _Verbose = verbose
+    global _Debug
+    _Debug = debug
 
 
 def debug(msg):
+    if _Debug:
+        click.secho(msg, fg='blue', err=True)
+
+
+def info(msg):
     if _Verbose:
         click.secho(msg, fg='yellow', err=True)
 
