@@ -7,8 +7,8 @@ before_script:
 build:
     stage: build
     script:
-	- python setup.py install
-	- pandoc-acronyms --help
+        - python3 setup.py install
+        - pandoc-acronyms --help
 
 test:
     stage: test

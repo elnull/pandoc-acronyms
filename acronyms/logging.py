@@ -5,6 +5,7 @@ _Verbose = False
 
 
 def configure_logging(verbose):
+    global _Verbose
     _Verbose = verbose
 
 
