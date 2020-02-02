@@ -45,6 +45,29 @@ class TestAcronymFilter(unittest.TestCase):
             result = filter.replace_acronym(matchtext, acronym, firstuse)
             self.assertEqual(result, expected_result, key)
 
+    def test_process_string_token(self):
+        # This replacer checks that the patterns are identified correctly:
+        def maybe_replace_tester(pattern):
+            return "###{}###".format(pattern)
+
+        filter = Filter()
+        filter.acronyms = self._createAcronymsDictionary(
+            "two_basic_acronyms.json")
+
+        tokens = {
+            # a simple pattern
+            "[!bba]": "###[!bba]###",
+            # a pattern with no match
+            "test": "test",
+            # a multi-word pattern with no match
+            "test-test test": "test-test test",
+            # a pattern with multiple matches
+            "[!bba]-related/[!aba]-based": "###[!bba]###-related/###[!aba]###-based"
+        }
+        for token, expected_result in tokens.items():
+            result = filter.process_string_token(token, maybe_replace_tester)
+            self.assertEqual(result, expected_result)
+
     def test_run_method(self):
         doc = self._loadJSONDocument("one_acronym.md")
         acronyms = return_local_test_data("two_basic_acronyms.json")

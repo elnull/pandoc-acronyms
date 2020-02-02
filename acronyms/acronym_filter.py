@@ -57,11 +57,29 @@ class Filter:
         match = expression.match(elementtext)
         return match
 
+    # FIXME outdated
     def replace_acronym(self, matchtext, acronym, firstuse):
         text = acronym.shortform
         if firstuse:
             text = "{} ({})".format(acronym.longform, acronym.shortform)
         return text
+
+    def process_string_token(self, token, replacer):
+        rx = re.compile(r'(\[\!.+?\])')
+        result = ""
+        while token:
+            match = rx.search(token)
+            if match:
+                (left, right) = match.span()
+                result += token[0:left]
+                pattern = token[left:right]
+                result += replacer(pattern)
+                token = token[right:]
+            else:
+                # no match left in token
+                result += token
+                token = ""
+        return result
 
     def maybe_replace(self, element, match):
         # TODO There may be more than one match, e.g. "FOSS-based-GDP"
