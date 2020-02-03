@@ -8,6 +8,7 @@ stages:
     - build
     - test
     - package
+    - deploy
 
 build:
     stage: build
@@ -22,9 +23,23 @@ test:
         - coverage run --source acronyms -m unittest discover
         - coverage report
 
+# The package stage checks that a package can be created and is always executed.
 package:
     stage: package
     script:
         - export PACKAGE_VERSION=$(git describe  --always --tags --abbrev=7 HEAD)
         - echo "Packaging version $PACKAGE_VERSION."
         - python3 setup.py sdist bdist_wheel
+
+# The deploy stage packages and publishes the packages to pypi. It only runs on tags.
+deploy:
+    only:
+        - tags
+#    except:
+#        - branches
+    script:
+        - export PACKAGE_VERSION=$(git describe  --always --tags --abbrev=7 HEAD)
+        - echo "Packaging version $PACKAGE_VERSION for deployment."
+        - python3 setup.py sdist bdist_wheel
+        - echo "Deploying to pypi..."
+        - echo "TODO"
