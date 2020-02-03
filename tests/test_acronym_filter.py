@@ -16,13 +16,13 @@ class TestAcronymFilter(unittest.TestCase):
         self.assertEqual(filter.index.occurences('bba'), 1)
         self.assertEqual(filter.index.occurences('aba'), 0)
 
-    def test_is_match(self):
+    def test_return_acronym_match(self):
         filter = Filter()
-        self.assertTrue(filter.is_match("[!BBA]"))
-        self.assertFalse(filter.is_match("[!]"))
-        self.assertFalse(filter.is_match("[]"))
-        self.assertFalse(filter.is_match("[[!BBA]]"))
-        self.assertFalse(filter.is_match("[@BBA]"))
+        self.assertTrue(filter.return_acronym_match("[!BBA]"))
+        self.assertFalse(filter.return_acronym_match("[!]"))
+        self.assertFalse(filter.return_acronym_match("[]"))
+        self.assertFalse(filter.return_acronym_match("[[!BBA]]"))
+        self.assertFalse(filter.return_acronym_match("[@BBA]"))
 
     def test_replace_acronym(self):
         filter = Filter()
@@ -91,10 +91,11 @@ class TestAcronymFilter(unittest.TestCase):
         doc = self._loadJSONDocument("sample-text.md")
         acronyms = return_local_test_data("two_basic_acronyms.json")
         filter = Filter()
-        try:
-            filter.run([acronyms], doc)
-        except:
-            self.fail("calling the run method should not fail")
+        filter.run([acronyms], doc)
+        # try:
+        #     filter.run([acronyms], doc)
+        # except:
+        #     self.fail("calling the run method should not fail")
         self.assertEqual(filter.index.occurences('bba'), 2)
         self.assertEqual(filter.index.occurences('undef'), 0)
 

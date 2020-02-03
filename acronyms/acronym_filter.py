@@ -47,47 +47,27 @@ class Filter:
     def filter_acronyms(self, element, doc):
         """The panflute filter function."""
         if type(element) == panflute.Str:
-            match = self.is_match(element.text)
-            if match:
-                self.maybe_replace(element, match)
+            pattern = element.text
+            replacer = self.acronym_replacer
+            element.text = self.process_string_token(pattern, replacer)
 
-    def is_match(self, elementtext):
-        """is_match returns True if the element is recognized as an acronym."""
-        expression = Filter.match_expression()
-        match = expression.match(elementtext)
+    def return_acronym_match(self, token):
+        """return_acronym_match returns True if the token text is recognized as an acronym."""
+        expression = Filter.acronym_pattern_expression()
+        match = expression.match(token)
         return match
 
-    # FIXME outdated
     def replace_acronym(self, matchtext, acronym, firstuse):
         text = acronym.shortform
         if firstuse:
             text = "{} ({})".format(acronym.longform, acronym.shortform)
         return text
 
-    def process_string_token(self, token, replacer):
-        rx = re.compile(r'(\[\!.+?\])')
-        result = ""
-        while token:
-            match = rx.search(token)
-            if match:
-                (left, right) = match.span()
-                result += token[0:left]
-                pattern = token[left:right]
-                result += replacer(pattern)
-                token = token[right:]
-            else:
-                # no match left in token
-                result += token
-                token = ""
-        return result
-
-    def maybe_replace(self, element, match):
-        # TODO There may be more than one match, e.g. "FOSS-based-GDP"
+    def acronym_replacer(self, pattern):
+        match = self.return_acronym_match(pattern)
         text = match.group(1)
-
-        acronyms = self.acronyms
         # is this an acronym?
-        acronym = acronyms.get(text)
+        acronym = self.acronyms.get(text)
         if not acronym:
             info("Warning: acronym {} undefined.".format(text))
             return
@@ -96,10 +76,28 @@ class Filter:
         # # is this the first use of the acronym?
         if count == 1:
             info("First use of acronym {} found.".format(text))
-            element.text = self.replace_acronym(element.text, acronym, True)
+            return self.replace_acronym(pattern, acronym, True)
         else:
             debug("Acronym {} found again.".format(text))
-            element.text = self.replace_acronym(element.text, acronym, False)
+            return self.replace_acronym(pattern, acronym, False)
+
+    def process_string_token(self, token, replacer):
+        """Parse the token, isolate the acronyms and pass them to the replacer function. Return the reassembled text."""
+        rx = Filter.acronym_search_expression()
+        result = ""
+        while token:
+            match = rx.search(token)
+            if match:
+                (left, right) = match.span()
+                result += token[0:left]
+                pattern = token[left:right]
+                result += replacer(pattern) or ''  # pattern could be empty
+                token = token[right:]
+            else:
+                # no match left in token
+                result += token
+                token = ""
+        return result
 
     def process_document(self, doc):
         """The entry method to execute the filter."""
@@ -109,8 +107,11 @@ class Filter:
             return self.filter_acronyms(element, doc)
 
         return panflute.run_filter(filter_closure, doc=doc)
-        # return doc.walk(filter_closure)
 
     @staticmethod
-    def match_expression():
+    def acronym_pattern_expression():
         return re.compile(r'\[\!(.+)\]')
+
+    @staticmethod
+    def acronym_search_expression():
+        return re.compile(r'(\[\!.+?\])')
