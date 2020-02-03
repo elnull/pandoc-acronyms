@@ -6,7 +6,7 @@ There is a convention in more precise writing to provide the full text
 of an acronym at first use. This can get difficult for example if the
 text of documents is split over multiple files, which makes it hard
 for the authors to know where the acronym will be used first. Such a
-task is best left to the computer. This is what the pandoc-acronyms
+task is best left to the computer. This is what the `pandoc-acronyms`
 filter is for. Authors list acronyms in a data file and then reference
 them in the text.
 
@@ -26,8 +26,9 @@ Write a data file that contains your acronyms:
 	}
 
 Then in the text, use the acronym in encoded form like `[!bba]`. The
-filter will recognize it, and on first use replace this with `beer
-brewing attitude (BBA)`. Any later use will be replaced by `BBA`. The
+filter will recognize it. On first use it replaces the marker with 
+`beer brewing attitude (BBA)`.
+Any later use will be replaced by `BBA`. The
 filter will print a notice if an acronym is found in the text that is
 not defined in the data file.
 
@@ -38,7 +39,7 @@ added to how pandoc is invoked:
 
 	> pandoc --filter pandoc-acronyms document.md
 
-Unfortunately, pandoc does not allow to pass parameters to filter. The
+Unfortunately, pandoc does not allow to pass parameters to filters. The
 acronym filter needs to load the acronyms from the data file. To work
 around this, the parameters to the filter can be passed in environment
 variables:
@@ -65,12 +66,12 @@ The pandoc acronym filter is installed using Python setuptools:
 	> python setup.py install
 	...
 
-After that, it is available as a standa-alone program in the
+After that, it is available as a stand-alone program in the
 installation location used by Python.
 
 ## Testing and debugging
 
-The pandoc-acronyms code uses the standard Python unittest
+The `pandoc-acronyms` code uses the standard Python unittest
 framework. Most tests are data-driven in that they use regular
 Markdown files and JSON acronym dictionaries as input and test how the
 code handles them. To test the filter code as regular Python unit
@@ -82,8 +83,8 @@ debugable.
 
 ## How to contribute
 
-The [https://gitlab.com/mirkoboehm/pandoc-acronyms](Git repository for
-the pandoc acronym filter) is hosted on Gitlab. It uses the Gitlab CI
+The [Git repository for the pandoc acronym filter](https://gitlab.com/mirkoboehm/pandoc-acronyms)
+is hosted on Gitlab. It uses the Gitlab CI
 to ensure quality, also for development branches and incoming merge
 requests. To contribute, please submit a merge request. Your merge
 request should maintain or increase the test coverage.
