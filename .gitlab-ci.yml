@@ -14,7 +14,6 @@ build:
     script:
         - python3 setup.py install
         - pandoc-acronyms --help
-        - env
 
 test:
     stage: test
@@ -26,6 +25,6 @@ test:
 package:
     stage: package
     script:
-        - export VERSION=$(git describe  --always --tags --abbrev=7 HEAD)
-        - echo $VERSION
+        - export PACKAGE_VERSION=$(git describe  --always --tags --abbrev=7 HEAD)
+        - echo "Packaging version $PACKAGE_VERSION."
         - python3 setup.py sdist bdist_wheel

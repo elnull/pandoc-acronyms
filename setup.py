@@ -1,4 +1,5 @@
 import setuptools
+import os
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
@@ -6,7 +7,8 @@ with open("README.md", "r") as fh:
 
 setup(
     name='pandoc-acronyms',
-    version='0.2',
+    # the PACKAGE_VERSION variable is defined in the CI runner:
+    version=os.environ.get('PACKAGE_VERSION') or '0.0.1-unreleased',
     author="Mirko Boehm",
     author_email="mirko@kde.org",
     description="A Python filter to manage acronyms",
