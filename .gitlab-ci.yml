@@ -4,11 +4,17 @@ before_script:
     - apt-get update -qq && apt-get install -y python3 python3-pip make git pandoc
     - pip3 install -r requirements.txt
 
+stages:
+    - build
+    - test
+    - package
+
 build:
     stage: build
     script:
         - python3 setup.py install
         - pandoc-acronyms --help
+        - env
 
 test:
     stage: test
@@ -17,7 +23,9 @@ test:
         - coverage run --source acronyms -m unittest discover
         - coverage report
 
-deploy:
-    stage: deploy
+package:
+    stage: package
     script:
+        - export VERSION=$(git describe  --always --tags --abbrev=7 HEAD)
+        - echo $VERSION
         - python3 setup.py sdist bdist_wheel
