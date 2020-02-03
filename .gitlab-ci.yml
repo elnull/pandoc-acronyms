@@ -16,3 +16,8 @@ test:
     script:
         - coverage run --source acronyms -m unittest discover
         - coverage report
+
+deploy:
+    stage: deploy
+    script:
+        - python3 setup.py sdist bdist_wheel
