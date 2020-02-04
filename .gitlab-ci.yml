@@ -39,15 +39,11 @@ deploy-to-test:
         - tags
     script:
         - export COMMIT_DATETIME=$(git show --no-patch --no-notes --pretty='%cd' --date=format:'%Y%m%d%H%M')
-# Note the .dev:
+# Note the .dev, it marks a "pre-release" version in pip logic:
         - export PACKAGE_VERSION="$(git describe  --always --tags --abbrev=0 HEAD).dev$COMMIT_DATETIME"
         - export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
         - export TWINE_PASSWORD=$TEST_API_TOKEN
-        - echo "Packaging version $PACKAGE_VERSION for deployment to $TWINE_REPOSITORY_URL."
-        - python3 setup.py sdist bdist_wheel
-        - echo "Deploying to pypi repository $TWINE_REPOSITORY_URL..."
-        - export TWINE_NON_INTERACTIVE=1
-        - python3 -m twine upload --username __token__ dist/*
+        - ./deploy.sh
 
 deploy-to-prod:
     stage: deploy
@@ -57,10 +53,7 @@ deploy-to-prod:
         - export COMMIT_DATETIME=$(git show --no-patch --no-notes --pretty='%cd' --date=format:'%Y%m%d%H%M')
 # No .dev here, just the numerical version:
         - export PACKAGE_VERSION="$(git describe  --always --tags --abbrev=0 HEAD).$COMMIT_DATETIME"
+# The official PyPI repository is the default:
 #       - export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
         - export TWINE_PASSWORD=$PROD_API_TOKEN
-        - echo "Packaging version $PACKAGE_VERSION for deployment to $TWINE_REPOSITORY_URL."
-        - python3 setup.py sdist bdist_wheel
-        - echo "Deploying to pypi repository $TWINE_REPOSITORY_URL..."
-        - export TWINE_NON_INTERACTIVE=1
-        - python3 -m twine upload --username __token__ dist/*
+        - ./deploy.sh
