@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 setup(
     name='pandoc-acronyms',
     # the PACKAGE_VERSION variable is defined in the CI runner:
-    version=os.environ.get('PACKAGE_VERSION') or '0.0.1-unreleased',
+    version=os.environ.get('PACKAGE_VERSION') or '0.0.1.dev0',
     author="Mirko Boehm",
     author_email="mirko@kde.org",
     description="A Python filter to manage acronyms",

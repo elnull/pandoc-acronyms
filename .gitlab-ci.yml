@@ -32,14 +32,18 @@ package:
         - python3 setup.py sdist bdist_wheel
 
 # The deploy stage packages and publishes the packages to pypi. It only runs on tags.
-deploy:
-    only:
+# The environment variable TWINE_PASSWORD must be set in CI accordingly.
+deploy-to-test:
+    stage: deploy
+    except:
         - tags
-#    except:
-#        - branches
     script:
-        - export PACKAGE_VERSION=$(git describe  --always --tags --abbrev=7 HEAD)
-        - echo "Packaging version $PACKAGE_VERSION for deployment."
+        - export COMMIT_DATETIME=$(git show --no-patch --no-notes --pretty='%cd' --date=format:'%Y%m%d%H%M')
+        - export PACKAGE_VERSION="$(git describe  --always --tags --abbrev=0 HEAD).dev$COMMIT_DATETIME"
+        - export TWINE_REPOSITORY_URL= https://test.pypi.org/legacy/
+        - export DEPLOYMENT_KEY=$TEST_DEPLOYMENT_KEY
+        - echo "Packaging version $PACKAGE_VERSION for deployment to $TWINE_REPOSITORY_URL."
         - python3 setup.py sdist bdist_wheel
-        - echo "Deploying to pypi..."
-        - echo "TODO"
+        - echo "Deploying to pypi repository $TWINE_REPOSITORY_URL..."
+        - export TWINE_NON_INTERACTIVE=1
+        - python3 -m twine upload --username __token__ --repository-url $TWINE_REPOSITORY_URL dist/*
