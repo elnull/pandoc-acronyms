@@ -7,7 +7,6 @@ before_script:
 stages:
     - build
     - test
-    - package
     - deploy
 
 build:
@@ -23,24 +22,15 @@ test:
         - coverage run --source acronyms -m unittest discover
         - coverage report
 
-# The package stage checks that a package can be created and is always executed.
-package:
-    stage: package
-    script:
-        - export PACKAGE_VERSION=$(git describe  --always --tags --abbrev=7 HEAD)
-        - echo "Packaging version $PACKAGE_VERSION."
-        - python3 setup.py sdist bdist_wheel
-
-# The deploy stage packages and publishes the packages to pypi. It only runs on tags.
-# The environment variable TWINE_PASSWORD must be set in CI accordingly.
+# The deploy stage packages and publishes to pypi on tags and test pypi during development.
+# The environment variables for the API tokens must be set in CI accordingly.
 deploy-to-test:
     stage: deploy
     except:
         - tags
     script:
-        - export COMMIT_DATETIME=$(git show --no-patch --no-notes --pretty='%cd' --date=format:'%Y%m%d%H%M')
-# Note the .dev, it marks a "pre-release" version in pip logic:
-        - export PACKAGE_VERSION="$(git describe  --always --tags --abbrev=0 HEAD).dev$COMMIT_DATETIME"
+# The .dev suffix marks a "pre-release" version in pip logic:
+        - export SUFFIX=".dev"
         - export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
         - export TWINE_PASSWORD=$TEST_API_TOKEN
         - ./deploy.sh
@@ -50,10 +40,6 @@ deploy-to-prod:
     only:
         - tags
     script:
-        - export COMMIT_DATETIME=$(git show --no-patch --no-notes --pretty='%cd' --date=format:'%Y%m%d%H%M')
 # No .dev here, just the numerical version:
-        - export PACKAGE_VERSION="$(git describe  --always --tags --abbrev=0 HEAD).$COMMIT_DATETIME"
-# The official PyPI repository is the default:
-#       - export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
         - export TWINE_PASSWORD=$PROD_API_TOKEN
         - ./deploy.sh
