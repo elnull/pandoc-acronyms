@@ -23,6 +23,7 @@ deploy-to-test:
     stage: deploy
     except:
         - tags
+        - master
     script:
 # The .dev suffix marks a "pre-release" version in pip logic:
         - export SUFFIX=".dev"
@@ -30,6 +31,17 @@ deploy-to-test:
         - export TWINE_PASSWORD=$TEST_API_TOKEN
         - ./deploy.sh
 
+# Merges to master are published to main pip, but marked as developer releases:
+deploy-to-beta:
+    stage: deploy
+    only:
+        - master
+    script:
+        - export SUFFIX=".dev"
+        - export TWINE_PASSWORD=$PROD_API_TOKEN
+        - ./deploy.sh
+
+# Tags mark released versions and go to pip as final releases:
 deploy-to-prod:
     stage: deploy
     only:
