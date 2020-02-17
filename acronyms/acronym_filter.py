@@ -33,6 +33,14 @@ class Filter:
     def index(self, value):
         self._index = value
 
+    @property
+    def suggest(self):
+        return self._suggest == True
+
+    @suggest.setter
+    def suggest(self, value):
+        self._suggest = (value == True)
+
     def run(self, acronymfiles, doc=None):
         if acronymfiles:
             for input in acronymfiles:
@@ -50,6 +58,8 @@ class Filter:
             pattern = element.text
             replacer = self.acronym_replacer
             element.text = self.process_string_token(pattern, replacer)
+            if self.suggest:
+                self.check_for_suggestions(pattern)
 
     def return_acronym_match(self, token):
         """return_acronym_match returns True if the token text is recognized as an acronym."""
@@ -80,6 +90,10 @@ class Filter:
         else:
             debug("Acronym {} found again.".format(text))
             return self.replace_acronym(pattern, acronym, False)
+
+    def check_for_suggestions(self, pattern):
+        # TODO implement
+        pass
 
     def process_string_token(self, token, replacer):
         """Parse the token, isolate the acronyms and pass them to the replacer function. Return the reassembled text."""
