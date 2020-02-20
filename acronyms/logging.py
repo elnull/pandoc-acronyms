@@ -17,7 +17,7 @@ def debug(msg):
         click.secho(msg, fg='blue', err=True)
 
 
-def info(msg):
+def info(msg, force = False):
     if _Verbose:
         click.secho(msg, fg='yellow', err=True)
 

@@ -60,7 +60,9 @@ class Filter:
             replacer = self.acronym_replacer
             element.text = self.process_string_token(pattern, replacer)
             if self.suggest:
-                self.check_for_suggestions(pattern)
+                suggestions = self.check_for_suggestions(pattern)
+                for suggestion in suggestions:
+                    info(suggestion, True)
 
     def return_acronym_match(self, token):
         """return_acronym_match returns True if the token text is recognized as an acronym."""
@@ -93,8 +95,13 @@ class Filter:
             return self.replace_acronym(pattern, acronym, False)
 
     def check_for_suggestions(self, pattern):
-        # TODO implement
-        pass
+        elements = pattern.split()
+        acronyms = self.acronyms.values
+        results = []
+        for key, acronym in acronyms.items():
+            if acronym.shortform in elements:
+                results.append('NOTE: "{}" in "{}" could be an acronym. Consider replacing it with [!{}].'.format( acronym.shortform, pattern, key))
+        return results
 
     def process_string_token(self, token, replacer):
         """Parse the token, isolate the acronyms and pass them to the replacer function. Return the reassembled text."""

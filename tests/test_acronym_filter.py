@@ -99,6 +99,16 @@ class TestAcronymFilter(unittest.TestCase):
         self.assertEqual(filter.index.occurences('bba'), 2)
         self.assertEqual(filter.index.occurences('undef'), 0)
 
+    def test_check_for_suggestions(self):
+        pattern = "A BBA is helpful, but BBA-requirements are not."
+        doc = self._loadJSONDocument("sample-text.md")
+        acronyms = return_local_test_data("two_basic_acronyms.json")
+        filter = Filter()
+        filter.run([acronyms], doc)
+        result = filter.check_for_suggestions(pattern)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], 'NOTE: "BBA" in "A BBA is helpful, but BBA-requirements are not." could be an acronym. Consider replacing it with [!bba].')
+
     def _createAcronymsDictionary(self, filename):
         with open(return_local_test_data(filename), "r") as handle:
             return Acronyms.Read(handle)
