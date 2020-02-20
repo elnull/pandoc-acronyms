@@ -16,6 +16,7 @@ class Filter:
     def __init__(self):
         self.acronyms = Acronyms()
         self.index = Index()
+        self.suggest = False
 
     @property
     def acronyms(self):
