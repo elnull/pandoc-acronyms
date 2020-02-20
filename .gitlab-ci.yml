@@ -26,7 +26,7 @@ deploy-to-test:
         - master
     script:
 # The .dev suffix marks a "pre-release" version in pip logic:
-        - export SUFFIX=".dev"
+        - export SUFFIX="dev"
         - export TWINE_REPOSITORY_URL=https://test.pypi.org/legacy/
         - export TWINE_PASSWORD=$TEST_API_TOKEN
         - ./deploy.sh
@@ -37,7 +37,7 @@ deploy-to-beta:
     only:
         - master
     script:
-        - export SUFFIX=".dev"
+        - export SUFFIX="dev"
         - export TWINE_PASSWORD=$PROD_API_TOKEN
         - ./deploy.sh
 
