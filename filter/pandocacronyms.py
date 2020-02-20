@@ -20,6 +20,7 @@ def filter(acronyms, verbose, suggest, debug, format):
     filter.suggest = suggest
     configure_logging(verbose, debug)
     logdebug("command line: {}".format(" ".join(sys.argv)))
+    logdebug("verbose: {}, debug: {}, suggest: {}".format(verbose, debug, suggest))
     try:
         filter.run(acronyms)
     except Exception as e:
