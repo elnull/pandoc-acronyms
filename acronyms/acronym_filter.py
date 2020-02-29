@@ -7,7 +7,7 @@ import click
 
 from acronyms.acronyms import Acronyms
 from acronyms.index import Index
-from acronyms.logging import debug, info
+from acronyms.logging import debug, info, error
 
 
 class Filter:
@@ -18,6 +18,7 @@ class Filter:
         self.index = Index()
         self.suggest = False
         self.report_error = False
+        self.has_error = False
 
     @property
     def acronyms(self):
@@ -50,6 +51,14 @@ class Filter:
     @report_error.setter
     def report_error(self, value):
         self._report_error = value
+
+    @property
+    def has_error(self):
+        return self._has_error
+
+    @has_error.setter
+    def has_error(self, value):
+        self._has_error = value
 
     def run(self, acronymfiles, doc=None):
         if acronymfiles:
@@ -91,7 +100,11 @@ class Filter:
         # is this an acronym?
         acronym = self.acronyms.get(text)
         if not acronym:
-            info("Warning: acronym {} undefined.".format(text))
+            if self.report_error:
+                error("Error: acronym {} undefined.".format(text))
+                self.has_error = True
+            else:
+                info("Warning: acronym {} undefined.".format(text))
             return
         # register the use of the acronym:
         count = self.index.register(acronym)

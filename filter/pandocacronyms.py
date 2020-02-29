@@ -4,7 +4,7 @@ import sys
 import os
 import click
 from acronyms.acronym_filter import Filter
-from acronyms.logging import configure_logging, error, debug as logdebug, info
+from acronyms.logging import configure_logging, error as logerror, debug as logdebug, info
 
 
 @click.command()
@@ -22,9 +22,12 @@ def filter(acronyms, verbose, suggest, error, debug, format):
     filter.report_error = error
     configure_logging(verbose, debug)
     logdebug("command line: {}".format(" ".join(sys.argv)))
-    logdebug("verbose: {}, debug: {}, suggest: {}, error: {}".format(verbose, debug, suggest, error))
+    logdebug("configuration: verbose: {}, debug: {}, suggest: {}, error: {}".format(verbose, debug, suggest, error))
     try:
         filter.run(acronyms)
+        if filter.has_error:
+            logerror("Errors encountered.")
+            sys.exit(1)
     except Exception as e:
         error(str(e))
         if verbose:
