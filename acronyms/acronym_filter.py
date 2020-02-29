@@ -17,6 +17,7 @@ class Filter:
         self.acronyms = Acronyms()
         self.index = Index()
         self.suggest = False
+        self.report_error = False
 
     @property
     def acronyms(self):
@@ -41,6 +42,14 @@ class Filter:
     @suggest.setter
     def suggest(self, value):
         self._suggest = (value == True)
+
+    @property
+    def report_error(self):
+        return self._report_error
+
+    @report_error.setter
+    def report_error(self, value):
+        self._report_error = value
 
     def run(self, acronymfiles, doc=None):
         if acronymfiles:

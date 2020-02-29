@@ -11,16 +11,18 @@ from acronyms.logging import configure_logging, error, debug as logdebug, info
 @click.option('-a', '--acronyms', envvar='PANDOC_ACRONYMS_ACRONYMS', default="", help='A file with acronym definitions in JSON format.', multiple=True)
 @click.option('-v', '--verbose/--no-verbose', envvar='PANDOC_ACRONYMS_VERBOSE', default=False, help='Enable verbose output.')
 @click.option('-s', '--suggest/--no-suggest', envvar='PANDOC_ACRONYMS_SUGGEST', default=False, help='Suggest marking acronyms detected in the text.')
-@click.option('-v', '--debug/--no-debug', envvar='PANDOC_ACRONYMS_DEBUG', default=False, help='Enable debug output.')
+@click.option('-e', '--error/--no-error', envvar='PANDOC_ACRONYMS_ERROR', default=False, help='Exit with an error if an undefined acronym is used.')
+@click.option('-d', '--debug/--no-debug', envvar='PANDOC_ACRONYMS_DEBUG', default=False, help='Enable debug output.')
 @click.version_option()
 @click.argument('format', nargs=-1)
-def filter(acronyms, verbose, suggest, debug, format):
+def filter(acronyms, verbose, suggest, error, debug, format):
     """The pandoc-acronyms filter."""
     filter = Filter()
     filter.suggest = suggest
+    filter.report_error = error
     configure_logging(verbose, debug)
     logdebug("command line: {}".format(" ".join(sys.argv)))
-    logdebug("verbose: {}, debug: {}, suggest: {}".format(verbose, debug, suggest))
+    logdebug("verbose: {}, debug: {}, suggest: {}, error: {}".format(verbose, debug, suggest, error))
     try:
         filter.run(acronyms)
     except Exception as e:
