@@ -154,8 +154,8 @@ class Filter:
 
     @staticmethod
     def acronym_pattern_expression():
-        return re.compile(r'\[\!(.+)\]')
+        return re.compile(r'\[\!([\w_-]+)\]')
 
     @staticmethod
     def acronym_search_expression():
-        return re.compile(r'(\[\!.+?\])')
+        return re.compile(r'(\[\![\w_-]+?\])')
