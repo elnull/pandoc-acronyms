@@ -16,13 +16,47 @@ class TestAcronymFilter(unittest.TestCase):
         self.assertEqual(filter.index.occurences('bba'), 1)
         self.assertEqual(filter.index.occurences('aba'), 0)
 
-    def test_return_acronym_match(self):
-        filter = Filter()
-        self.assertTrue(filter.return_acronym_match("[!BBA]"))
-        self.assertFalse(filter.return_acronym_match("[!]"))
-        self.assertFalse(filter.return_acronym_match("[]"))
-        self.assertFalse(filter.return_acronym_match("[[!BBA]]"))
-        self.assertFalse(filter.return_acronym_match("[@BBA]"))
+    # TODO Port to PyTest to use test parametrization
+    def test_markup_expression(self):
+        """This tests bisects a single markup expression and verifies that it is parsed correctly.""" 
+        test_sets = {
+            # id (description, unique)  : [ markup, valid?,     spec, valid?,       key, plural, uppercase, form]
+            "a simple acronym"          : [ '[!bba]', True,     'bba', True,        'bba', False, False, None ],
+            "a plural acronym"          : [ '[!+bba]', True,    '+bba', True,       'bba', True, False, None ],
+            "plural, explained"         : [ '[!+bba!]', True,   '+bba!', True,      'bba', True, False, '!' ],
+            "plural, short form"        : [ '[!+bba<]', True,   '+bba<', True,      'bba', True, False, '<' ],
+            "plural, long form"         : [ '[!+bba>]', True,   '+bba>', True,      'bba', True, False, '>' ],
+            "uppercase, plural, long"   : [ '[!+^bba>]', True,  '+^bba>', True,     'bba', True, True, '>' ],
+            "an uppercase acronym"      : [ '[!^bba]', True,    '^bba', True,       'bba', False, True, None] ,
+            "missing exclamation mark"  : [ '[^bba!]', False,   None, None,         None, None, None, None],
+            "not an acronym at all"     : [ 'nonsense', False,  None, None,         None, None, None, None],
+            "bad - key with dash"       : [ '[!-bad]', True,    '-bad', None,       None, None, None, None],
+            "bad - multiple forms"      : [ '[!bad>!]', True,   'bad>!', None,      None, None, None, None],
+            "bad - plural comes first"  : [ '[!^+bad]', True,   '^+bad', None,      None, None, None, None],
+            "no content"                : [ '[!]', False,       None, None,         None, None, None, None],
+        }
+
+        for id, test_set in test_sets.items():
+            self.assertEqual(len(test_set), 8) # just to be sure
+            # ex_* describes expected values:
+            [ expression, ex_expression_valid, ex_spec, ex_spec_valid, ex_key, ex_plural, ex_uppercase, ex_form ] = test_set
+            match = Filter.acronym_markup_expression().match(expression)
+            self.assertEqual(match is not None, ex_expression_valid, id)
+            # abort here if the expression is (expectedly) not valid
+            if not match: continue
+            # verify the specification was extracted correctly
+            spec = match.group(1)
+            self.assertEqual(spec, ex_spec, id)
+            match_attributes = Filter.return_acronym_match(spec)
+            if not ex_spec_valid:
+                self.assertFalse(match_attributes, id)
+                continue
+            # if the spec is valid, verify the parsing:
+            [ key, plural, uppercase, form ] = match_attributes
+            self.assertEqual(key, ex_key, id)
+            self.assertEqual(plural, ex_plural, id)
+            self.assertEqual(uppercase, ex_uppercase, id)
+            self.assertEqual(form, ex_form, id)
 
     def test_replace_acronym(self):
         filter = Filter()
@@ -42,13 +76,13 @@ class TestAcronymFilter(unittest.TestCase):
             matchtext = test_set[0]
             firstuse = test_set[1]
             expected_result = test_set[2]
-            result = filter.replace_acronym(matchtext, acronym, firstuse)
+            result = filter.replace_acronym(matchtext, acronym, firstuse, False, False, None)
             self.assertEqual(result, expected_result, key)
 
     def test_process_string_token(self):
         # This replacer checks that the patterns are identified correctly:
-        def maybe_replace_tester(pattern):
-            return "###{}###".format(pattern)
+        def maybe_replace_tester(pattern, matchtext):
+            return "###{}###".format(matchtext)
 
         filter = Filter()
         filter.acronyms = self._createAcronymsDictionary(
