@@ -121,14 +121,29 @@ class Filter:
             info("First use of acronym {} found.".format(key))
         else:
             debug("Acronym {} found again.".format(key))
-        return self.replace_acronym(pattern, acronym, count == 1, plural, uppercase, form)
+        return self.expand_acronym(acronym, count == 1, plural, uppercase, form)
 
-    def replace_acronym(self, matchtext, acronym, firstuse, plural, uppercase, form):
-        # TODO implement plural, uppercase, form:
-        text = acronym.shortform
-        if firstuse:
-            text = "{} ({})".format(acronym.longform, acronym.shortform)
-        return text
+    def expand_acronym(self, acronym, firstuse, plural, uppercase, form):
+        # TODO how to handle the case if all forms are empty?
+        shortform = acronym.shortform
+        if plural:
+            shortform = "{}s".format(acronym.shortform)
+        longform = acronym.longform
+        if longform and plural:
+            longform = "{}s".format(longform)
+        if longform and uppercase:
+            longform = longform.capitalize()
+        explained = "{} ({})".format(longform, shortform)
+        if not form:
+            if firstuse:
+                return explained
+            return shortform
+        elif form == '!':
+            return explained
+        elif form == '>':
+            return longform
+        else: # the parser checks for the allowed values
+            return shortform
 
     def check_for_suggestions(self, pattern):
         elements = pattern.split()

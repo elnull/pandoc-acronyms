@@ -58,25 +58,32 @@ class TestAcronymFilter(unittest.TestCase):
             self.assertEqual(uppercase, ex_uppercase, id)
             self.assertEqual(form, ex_form, id)
 
-    def test_replace_acronym(self):
+    # TODO ? make test for acronym_replacer that simulates stepping through a document
+
+    def test_expand_acronym(self):
         filter = Filter()
         filter.acronyms = self._createAcronymsDictionary(
             "two_basic_acronyms.json")
         acronym = filter.acronyms.get('bba')
         test_sets = {
-            # key (descriptive) : (input, first use?, expected result)
-            "first use of acronym": ["[!bba]", True, "beer brewing attitude (BBA)"],
-            "repeated use of acronym": ["[!bba]", False, "BBA"]
-            # TODO Not Implemented:
-            # "repeated use, plural form": ["[!bba+]", False, "BBAs"],
-            # "use-with-word": ["[!bba]-related", False, "BBA-related"],
-
+            # id (descriptive)          : [ first use?  plural, uppercase, form,    result ]
+            "first use of acronym"      : [ True,       False, False, None,         "beer brewing attitude (BBA)" ],
+            "repeated use of acronym"   : [ False,      False, False, None,         "BBA" ],
+            "first use, plural form"    : [ True,       True, False, None,          "beer brewing attitudes (BBAs)" ],
+            "repeated use, plural form" : [ False,      True, False, None,          "BBAs" ],
+            "first use, uppercase"      : [ True,       False, True, None,          "Beer brewing attitude (BBA)" ],
+            "repeated use, uppercase"   : [ False,      False, True, None,          "BBA" ],
+            "explicit longform"         : [ False,      False, False, '>',          "beer brewing attitude" ],
+            "explicit longform upper"   : [ False,      False, True, '>',           "Beer brewing attitude" ],
+            "explicit shortform"        : [ False,      False, True, '<',           "BBA" ],
+            "explicit explained form"   : [ False,      False, False, '!',          "beer brewing attitude (BBA)" ],
+            "explicit explained upper"  : [ False,      False, True, '!',           "Beer brewing attitude (BBA)" ],
+            "expl expl upper plural"    : [ False,      True, True, '!',            "Beer brewing attitudes (BBAs)" ],
         }
         for key, test_set in test_sets.items():
-            matchtext = test_set[0]
-            firstuse = test_set[1]
-            expected_result = test_set[2]
-            result = filter.replace_acronym(matchtext, acronym, firstuse, False, False, None)
+            self.assertEqual(len(test_set), 5)
+            [ firstuse, plural, uppercase, form, expected_result ] = test_set
+            result = filter.expand_acronym(acronym, firstuse, plural, uppercase, form)
             self.assertEqual(result, expected_result, key)
 
     def test_process_string_token(self):
