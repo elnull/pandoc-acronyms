@@ -27,11 +27,11 @@ Write a data file that contains your acronyms:
 
 Then in the text, use the acronym in encoded form like `[!bba]`. The
 filter will recognize it. On first use it replaces the marker with
-`beer brewing attitude (BBA)`.
-Any later use will be replaced by `BBA`. The
-filter will print a notice if an acronym is found in the text that is
-not defined in the data file. The keys may consist of letters, numbers,
-dashes and underscores ("a-b" or "ab" or "a_b").
+`beer brewing attitude (BBA)`.  Any later use will be replaced by
+`BBA`. The filter will print a notice if an acronym is found in the
+text that is not defined in the data file. The keys start with a
+character and may consist of letters, numbers, dashes, the plus sign
+and underscores ("a-b", "ab", "a_b" or "c++", but not "++c").
 
 ## Using the filter
 
