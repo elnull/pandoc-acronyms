@@ -163,7 +163,7 @@ class Filter:
 
         return panflute.run_filter(filter_closure, doc=doc)
 
-    _acronym_specification_expression = re.compile(r'^(\+?)(\^?)(\w[\w_-]*)([\<\>\!]?)$')
+    _acronym_specification_expression = re.compile(r'^(\+?)(\^?)(\w[\w_+-]*)([\<\>\!]?)$')
     _acronym_markup_expression = re.compile(r'\[\!(.+?)\]')
 
     @staticmethod
