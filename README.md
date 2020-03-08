@@ -34,9 +34,10 @@ character and may consist of letters, numbers, dashes, the plus sign
 and underscores ("a-b", "ab", "a_b" or "c++", but not "++c").
 
 The replacements will be made to the text and are independent of the
-selected output format. While tools such as
-[pandoc-ac](https://github.com/Enet4/pandoc-ac) help users with acronyms
-in LaTeX, `pandoc-acronyms` is designed to work with all output formats.
+selected output format. While tools such
+as [pandoc-ac](https://github.com/Enet4/pandoc-ac) help users with
+generating acronym commands in LaTeX, `pandoc-acronyms` is designed to
+work directly on the document text.
 
 ## Using acronyms in the input text
 
@@ -59,7 +60,7 @@ added to how pandoc is invoked:
 
 	> pandoc --filter pandoc-acronyms document.md
 
-Unfortunately, pandoc does not allow to pass parameters to filters. The
+Pandoc does not allow to pass parameters to filters. The
 acronym filter needs to load the acronyms from the data file. To work
 around this, the parameters to the filter can be passed in environment
 variables:
@@ -99,7 +100,9 @@ The `pandoc-acronyms` program is released via the [Python Package Index](https:/
 	> pip install pandoc-acronyms
 	...
 
-Alternatively, developers can clone the [main repository](https://gitlab.com/mirkoboehm/pandoc-acronyms) and install using Python setuptools:
+Alternatively, developers can clone
+the [main repository](https://gitlab.com/mirkoboehm/pandoc-acronyms)
+and install using Python setuptools:
 
 	> python setup.py install
 	...
@@ -121,8 +124,19 @@ debugable.
 
 ## How to contribute
 
-The [Git repository for the pandoc acronym filter](https://gitlab.com/mirkoboehm/pandoc-acronyms)
-is hosted on Gitlab. It uses the Gitlab CI
-to ensure quality, also for development branches and incoming merge
-requests. To contribute, please submit a merge request. Your merge
+The
+[Git repository for the pandoc acronym filter](https://gitlab.com/mirkoboehm/pandoc-acronyms) is
+hosted on Gitlab. It uses the Gitlab CI system to ensure quality, also
+for development branches and incoming merge requests. Deployment
+to [PyPI](https://pypi.org/) is automated. Development branches and
+merge requests will be deployed to
+the
+[PyPI test instance](https://test.pypi.org/project/pandoc-acronyms/)
+as development packages. Commits to master will be deployed to regular
+PyPI as development packages. Tagged versions on master are deployed
+to PyPI
+as
+[stable releases](https://pypi.org/project/pandoc-acronyms/#history).
+
+To contribute, please submit a merge request. Your merge
 request should maintain or increase the test coverage.
