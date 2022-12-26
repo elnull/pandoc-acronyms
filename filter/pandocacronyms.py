@@ -8,7 +8,7 @@ from acronyms.logging import configure_logging, error as logerror, debug as logd
 
 
 @click.command()
-@click.option('-a', '--acronyms', envvar='PANDOC_ACRONYMS_ACRONYMS', default="", help='A file with acronym definitions in JSON format.', multiple=True)
+@click.option('-a', '--acronyms', envvar='PANDOC_ACRONYMS_ACRONYMS', default=[""], help='A file with acronym definitions in JSON format.', multiple=True)
 @click.option('-v', '--verbose/--no-verbose', envvar='PANDOC_ACRONYMS_VERBOSE', default=False, help='Enable verbose output.')
 @click.option('-s', '--suggest/--no-suggest', envvar='PANDOC_ACRONYMS_SUGGEST', default=False, help='Suggest marking acronyms detected in the text.')
 @click.option('-e', '--error/--no-error', envvar='PANDOC_ACRONYMS_ERROR', default=False, help='Exit with an error if an undefined acronym is used.')
