@@ -19,6 +19,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'Click',
+        'panflute',
+        'pyyaml',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
